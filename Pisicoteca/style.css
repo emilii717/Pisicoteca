@@ -1,0 +1,24 @@
+body {
+  margin: 0;
+  background-color: #ffe9f0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  text-align: center;
+  color: #5c2c3a;
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  border: 4px dashed #ffb6c1;
+  border-radius: 12px;
+}
+
+#titlu {
+  font-size: 2em;
+  margin-top: 20px;
+}
+
+#instructiuni {
+  font-size: 1em;
+  margin-bottom: 10px;
+}
