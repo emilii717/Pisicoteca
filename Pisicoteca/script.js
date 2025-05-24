@@ -1,76 +1,73 @@
-// Colectie de pisici prietenoase – le prindem in canvas
 let pisici = [];
-let pisiciColectate = [];
+let pisiciCapturate = [];
 let imaginiPisici = [];
-let pisicaSelectata = 0;
 
-// Preîncarcă imaginile (numite exact ca fișierele din assets/)
 function preload() {
-  for (let i = 1; i <= 3; i++) {
-    let img = loadImage(`assets/pisica${i}.png`);
-    imaginiPisici.push(img);
+  for (let i = 1; i <= 10; i++) {
+    imaginiPisici.push(loadImage(`assets/pisica${i}.png`));
   }
 }
 
-// Se rulează o singură dată la început
 function setup() {
-  createCanvas(600, 400);
-  imageMode(CENTER);
+  const canvas = createCanvas(640, 240);
+  canvas.parent("canvas-container");
+  textAlign(CENTER, CENTER);
+  textSize(16);
+  selecteazaPisiciAleatoare();
+}
 
-  // Generăm 3 pisici în locații random
-  for (let i = 0; i < imaginiPisici.length; i++) {
+function draw() {
+  background('#fff5fc');
+
+  for (let i = 0; i < pisici.length; i++) {
+    let p = pisici[i];
+    let bounce = sin(frameCount * 0.1 + i) * 5;
+
+    image(p.img, p.x, p.y + bounce, 64, 64);
+  }
+}
+
+// Selectează 3 pisici necapturate, aleatoriu
+function selecteazaPisiciAleatoare() {
+  pisici = [];
+  let indexuriDisponibile = imaginiPisici.map((_, i) => i).filter(i => !pisiciCapturate.includes(i));
+  shuffle(indexuriDisponibile, true);
+
+  for (let i = 0; i < 3 && i < indexuriDisponibile.length; i++) {
+    let idx = indexuriDisponibile[i];
     pisici.push({
-      x: random(100, width - 100),
-      y: random(100, height - 100),
-      img: imaginiPisici[i],
-      gasita: false
+      img: imaginiPisici[idx],
+      index: idx,
+      x: 100 + i * 150,
+      y: 100,
     });
   }
 }
 
-// Se rulează în buclă, de 60 de ori pe secundă
-function draw() {
-  background('#fff0f5');
-
-  // Afișăm toate pisicile (care nu au fost deja prinse)
-  for (let i = 0; i < pisici.length; i++) {
-    if (!pisici[i].gasita) {
-      // Animatie bouncing
-      let yOffset = sin(frameCount * 0.1 + i) * 5;
-      image(pisici[i].img, pisici[i].x, pisici[i].y + yOffset, 64, 64);
-    }
-  }
-
-  // Afișăm scorul
-  fill(80);
-  textSize(16);
-  textAlign(LEFT);
-  text(`Pisici prinse: ${pisiciColectate.length}/${pisici.length}`, 10, 20);
-}
-
-// Prinde o pisică dacă dai click pe ea
 function mousePressed() {
+  verificaClick(mouseX, mouseY);
+}
+
+function keyPressed() {
+  verificaClick(mouseX, mouseY); // poți prinde și cu o tastă
+}
+
+function verificaClick(x, y) {
   for (let i = 0; i < pisici.length; i++) {
-    if (!pisici[i].gasita) {
-      let d = dist(mouseX, mouseY, pisici[i].x, pisici[i].y);
-      if (d < 32) {
-        pisici[i].gasita = true;
-        pisiciColectate.push(pisici[i].img);
+    let p = pisici[i];
+    if (x > p.x && x < p.x + 64 && y > p.y && y < p.y + 64) {
+      if (!pisiciCapturate.includes(p.index)) {
+        pisiciCapturate.push(p.index);
+        adaugaInAlbum(p.img);
       }
+      selecteazaPisiciAleatoare();
+      break;
     }
   }
 }
 
-// Alternativ, cu tastele: selectezi și prinzi cu Enter
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    pisicaSelectata = (pisicaSelectata - 1 + pisici.length) % pisici.length;
-  } else if (keyCode === RIGHT_ARROW) {
-    pisicaSelectata = (pisicaSelectata + 1) % pisici.length;
-  } else if (keyCode === ENTER) {
-    if (!pisici[pisicaSelectata].gasita) {
-      pisici[pisicaSelectata].gasita = true;
-      pisiciColectate.push(pisici[pisicaSelectata].img);
-    }
-  }
+function adaugaInAlbum(img) {
+  let album = document.getElementById("album");
+  let nouaPisica = createImg(img.canvas.toDataURL(), "Pisică");
+  nouaPisica.parent(album);
 }
