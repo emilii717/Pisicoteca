@@ -2,6 +2,8 @@ let pisici = [];
 let pisiciCapturate = [];
 let imaginiPisici = [];
 
+console.log("Scriptul a pornit!");
+
 function preload() {
   for (let i = 1; i <= 10; i++) {
     imaginiPisici.push(loadImage(`assets/pisica${i}.png`));
